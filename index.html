@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Expense Splitter</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+    <h1>Smart Expense Tracker</h1>
+
+    <!-- Add Person -->
+    <div class="card">
+        <div class="card-title">Add Person</div>
+        <div class="row">
+            <input type="text" id="personInput" placeholder="Enter name">
+            <button id="addPersonBtn" class="btn-primary">Add</button>
+        </div>
+        <ul id="peopleList" class="list"></ul>
+    </div>
+
+    <!-- Add Expense -->
+    <div class="card">
+        <div class="card-title">Add Expense</div>
+        <div class="row">
+            <input type="number" id="amountInput" placeholder="Amount">
+            <select id="paidBySelect"></select>
+        </div>
+        <button id="addExpenseBtn" class="btn-primary mt">Add Expense</button>
+    </div>
+
+    <!-- Expenses -->
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">Expenses</div>
+            <button id="clearAllBtn" class="btn-danger">Clear All</button>
+        </div>
+        <ul id="expenseList" class="list"></ul>
+    </div>
+
+    <!-- Summary -->
+    <div class="card">
+        <div class="card-title">Summary</div>
+        <ul id="summaryList" class="list"></ul>
+    </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
