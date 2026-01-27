@@ -26,9 +26,9 @@ JavaScript powers the complete functionality of the application. It handles user
 
 localStorage is used to store completed expense sessions and history data.
 This ensures that:
-*Expense history remains available even after refreshing the page.
-*No backend or database is required.
-*The application behaves like a real-world product.
+-Expense history remains available even after refreshing the page.
+-No backend or database is required.
+-The application behaves like a real-world product.
 
 Using localStorage keeps the project simple while still demonstrating persistence and state management.
 
@@ -41,21 +41,21 @@ Event delegation is implemented for dynamically created elements like expense ro
 
 The application relies heavily on DOM manipulation to update the interface in real time.
 JavaScript dynamically:
-*Creates and removes expense rows
-*Updates summary values
-*Shows and hides the summary modal
-*Renders expense history cards
-*Resets the UI when an expense is completed or cleared
+-Creates and removes expense rows
+-Updates summary values
+-Shows and hides the summary modal
+-Renders expense history cards
+-Resets the UI when an expense is completed or cleared
 This ensures the UI always reflects the current state of the application.
 
 **Expense Summary Logic**
 
 The summary calculation follows a simple and clear approach:
-*The total expense is calculated by summing all contributions
-*The total is divided equally among all participants
-*Each participant’s balance is calculated as:
+-The total expense is calculated by summing all contributions
+-The total is divided equally among all participants
+-Each participant’s balance is calculated as:
 Amount Paid − Equal Share
-*A positive balance means the person should receive money
-*A negative balance means the person owes money
+-A positive balance means the person should receive money
+-A negative balance means the person owes money
 The results are displayed using clear text and color indicators for better understanding.
 
