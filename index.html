@@ -1,49 +1,61 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Expense Splitter</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <title>Smart Expense Tracker</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <div class="container">
-    <h1>Smart Expense Tracker</h1>
+  <h1>Smart Expense Tracker</h1>
+  <p class="subtitle">Track, split, and settle group expenses easily</p>
 
-    <!-- Add Person -->
-    <div class="card">
-        <div class="card-title">Add Person</div>
-        <div class="row">
-            <input type="text" id="personInput" placeholder="Enter name">
-            <button id="addPersonBtn" class="btn-primary">Add</button>
-        </div>
-        <ul id="peopleList" class="list"></ul>
+  <!-- Add People -->
+  <div class="card">
+    <h2>Add People</h2>
+    <div class="row">
+      <input type="text" id="personInput" placeholder="Person name">
+      <button id="addPersonBtn">Add</button>
     </div>
+    <ul id="peopleList"></ul>
+  </div>
 
-    <!-- Add Expense -->
-    <div class="card">
-        <div class="card-title">Add Expense</div>
-        <div class="row">
-            <input type="number" id="amountInput" placeholder="Amount">
-            <select id="paidBySelect"></select>
-        </div>
-        <button id="addExpenseBtn" class="btn-primary mt">Add Expense</button>
+  <!-- Add Contributions -->
+  <div class="card">
+    <h2>Add Contributions</h2>
+    <div class="row">
+      <input type="number" id="amountInput" placeholder="Amount">
+      <select id="paidBySelect">
+        <option value="">Paid by</option>
+      </select>
+      <button id="addExpenseBtn">Add Contribution</button>
+      <button id="finishContributionsBtn">Finish Contributions</button>
     </div>
+    <ul id="expenseList"></ul>
+  </div>
 
-    <!-- Expenses -->
-    <div class="card">
-        <div class="card-header">
-            <div class="card-title">Expenses</div>
-            <button id="clearAllBtn" class="btn-danger">Clear All</button>
-        </div>
-        <ul id="expenseList" class="list"></ul>
+  <!-- Summary Modal -->
+  <div id="summaryModal" class="modal">
+    <div class="modal-content">
+      <h2>Expense Summary</h2>
+      <ul id="summaryList"></ul>
+      <p>Total Amount: <span id="totalAmount">0</span></p>
+      <div class="modal-buttons">
+        <button id="editBtn">Edit</button>
+        <button id="finishBtn">Finish Expense</button>
+      </div>
     </div>
+  </div>
 
-    <!-- Summary -->
-    <div class="card">
-        <div class="card-title">Summary</div>
-        <ul id="summaryList" class="list"></ul>
+  <!-- History -->
+  <div class="card">
+    <div class="history-header">
+      <h2>Expense History</h2>
+      <button class="danger small" id="clearAllBtn">Clear All</button>
     </div>
+    <div id="historyList"></div>
+  </div>
 </div>
 
 <script src="script.js"></script>

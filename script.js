@@ -6,164 +6,167 @@ const peopleList = document.getElementById("peopleList");
 const amountInput = document.getElementById("amountInput");
 const paidBySelect = document.getElementById("paidBySelect");
 const addExpenseBtn = document.getElementById("addExpenseBtn");
-
+const finishContributionsBtn = document.getElementById("finishContributionsBtn");
 const expenseList = document.getElementById("expenseList");
+
+const summaryModal = document.getElementById("summaryModal");
+const summaryList = document.getElementById("summaryList");
+const totalAmountEl = document.getElementById("totalAmount");
+const finishBtn = document.getElementById("finishBtn");
+const editBtn = document.getElementById("editBtn");
+
+const historyList = document.getElementById("historyList");
 const clearAllBtn = document.getElementById("clearAllBtn");
 
-const summaryList = document.getElementById("summaryList");
+// Data
+let people = JSON.parse(localStorage.getItem("people")) || [];
+let history = JSON.parse(localStorage.getItem("history")) || [];
+let currentExpense = []; // [{name, amount}]
 
-// Data Arrays
-let people = [];
-let expenses = [];
-
-/* ---------- Storage ---------- */
-function saveToStorage() {
-    localStorage.setItem("people", JSON.stringify(people));
-    localStorage.setItem("expenses", JSON.stringify(expenses));
+// Helpers
+function updatePaidBySelect() {
+  paidBySelect.innerHTML = `<option value="">Paid by</option>`;
+  people.forEach(p => {
+    const opt = document.createElement("option");
+    opt.value = p; opt.textContent = p;
+    paidBySelect.appendChild(opt);
+  });
 }
-
-function loadFromStorage() {
-    const p = localStorage.getItem("people");
-    const e = localStorage.getItem("expenses");
-
-    if (p) people = JSON.parse(p);
-    if (e) expenses = JSON.parse(e);
-}
-
-/* ---------- People ---------- */
-addPersonBtn.addEventListener("click", () => {
-    const name = personInput.value.trim();
-    if (!name) return;
-
-    people.push({ name, balance: 0 });
-    personInput.value = "";
-
-    updatePaidBy();
-    renderPeople();
-    recalculate();
-    saveToStorage();
-});
 
 function renderPeople() {
-    peopleList.innerHTML = "";
-    people.forEach(p => {
-        const li = document.createElement("li");
-        li.className = "list-item";
-        li.textContent = p.name;  // Cannot delete person individually
-        peopleList.appendChild(li);
-    });
+  peopleList.innerHTML = "";
+  people.forEach(p=>{
+    const li = document.createElement("li"); li.textContent=p;
+    peopleList.appendChild(li);
+  });
+  updatePaidBySelect();
 }
-
-function updatePaidBy() {
-    paidBySelect.innerHTML = "<option value=''>Paid By</option>";
-    people.forEach(p => {
-        const opt = document.createElement("option");
-        opt.value = p.name;
-        opt.textContent = p.name;
-        paidBySelect.appendChild(opt);
-    });
-}
-
-/* ---------- Expenses ---------- */
-addExpenseBtn.addEventListener("click", () => {
-    const amount = Number(amountInput.value);
-    const paidBy = paidBySelect.value;
-
-    if (!amount || !paidBy) return;
-
-    expenses.push({ amount, paidBy });
-    amountInput.value = "";
-
-    recalculate();
-    renderExpenses();
-    saveToStorage();
-});
 
 function renderExpenses() {
-    expenseList.innerHTML = "";
-
-    expenses.forEach((exp, index) => {
-        const li = document.createElement("li");
-        li.className = "list-item";
-
-        li.innerHTML = `
-            <span>${exp.paidBy} paid ₹${exp.amount}</span>
-            <button class="btn-danger small-btn">Delete</button>
-        `;
-
-        li.querySelector("button").onclick = () => {
-            expenses.splice(index, 1);
-            recalculate();
-            renderExpenses();
-            saveToStorage();
-        };
-
-        expenseList.appendChild(li);
-    });
+  expenseList.innerHTML = "";
+  currentExpense.forEach((exp,index)=>{
+    const li = document.createElement("li");
+    li.classList.add("expense-row");
+    li.innerHTML=`
+      ${exp.name}: ₹${exp.amount} 
+      <span class="row-actions">
+        <button class="row-edit" data-index="${index}">✎</button>
+        <button class="row-delete" data-index="${index}">✕</button>
+      </span>
+    `;
+    expenseList.appendChild(li);
+  });
 }
 
-/* ---------- CLEAR ALL (RESET APP) ---------- */
-clearAllBtn.addEventListener("click", () => {
-    if (!confirm("Are you sure? This will delete all people and expenses.")) return;
+function showSummaryModal(){
+  summaryList.innerHTML = "";
+  const balances = {};
+  let total = 0;
+  people.forEach(p => balances[p] = 0);
+  currentExpense.forEach(e => { balances[e.name] += e.amount; total += e.amount; });
+  const split = total / people.length;
+  people.forEach(p => balances[p] -= split);
 
-    people = [];
-    expenses = [];
-    localStorage.clear();
+  people.forEach(p => {
+    const li = document.createElement("li");
+    if (balances[p] > 0) li.innerHTML = `<span class="credit">${p} receives ₹${balances[p].toFixed(2)}</span>`;
+    else if (balances[p] < 0) li.innerHTML = `<span class="debit">${p} owes ₹${Math.abs(balances[p]).toFixed(2)}</span>`;
+    else li.innerHTML = `<span>${p} is settled</span>`;
+    summaryList.appendChild(li);
+  });
 
-    updatePaidBy();
-    renderPeople();
-    renderExpenses();
-    renderSummary(); // clear summary
+  totalAmountEl.textContent = `₹${total.toFixed(2)}`;
+  summaryModal.style.display = "flex";
+}
+
+function renderHistory() {
+  historyList.innerHTML = "";
+  history.forEach(sess=>{
+    const div = document.createElement("div");
+    div.classList.add("history-item");
+    let html = `<strong>Session ${sess.id}</strong> <small>${new Date(sess.timestamp).toLocaleString()}</small><ul>`;
+    for(let p in sess.balances){
+      html += `<li>${p}: <span class="${sess.balances[p]>=0?'credit':'debit'}">₹${sess.balances[p].toFixed(2)}</span></li>`;
+    }
+    html += "</ul>";
+    div.innerHTML = html;
+    historyList.appendChild(div);
+  });
+}
+
+function saveData(){
+  localStorage.setItem("people",JSON.stringify(people));
+  localStorage.setItem("history",JSON.stringify(history));
+}
+
+// Event Listeners
+addPersonBtn.addEventListener("click", ()=>{
+  const name = personInput.value.trim();
+  if(name && !people.includes(name)){ people.push(name); personInput.value=""; renderPeople(); saveData(); }
 });
 
-/* ---------- Calculation ---------- */
-function recalculate() {
-    people.forEach(p => p.balance = 0);
+addExpenseBtn.addEventListener("click", ()=>{
+  const amount = parseFloat(amountInput.value);
+  const paidBy = paidBySelect.value;
+  if(!amount || !paidBy) return;
 
-    if (people.length === 0 || expenses.length === 0) return;
+  const existing = currentExpense.find(e => e.name === paidBy);
+  if(existing){ existing.amount = amount; } 
+  else { currentExpense.push({name: paidBy, amount}); }
 
-    expenses.forEach(exp => {
-        const share = exp.amount / people.length;
+  amountInput.value = ""; paidBySelect.value = "";
+  renderExpenses();
+});
 
-        people.forEach(p => p.balance -= share);
+// Finish Contributions → modal
+finishContributionsBtn.addEventListener("click", ()=>{
+  if(currentExpense.length===0) return;
+  showSummaryModal();
+});
 
-        const payer = people.find(p => p.name === exp.paidBy);
-        if (payer) payer.balance += exp.amount;
-    });
+// Row delete/edit
+expenseList.addEventListener("click", e=>{
+  const idx = e.target.getAttribute("data-index");
+  if(e.target.classList.contains("row-delete")){
+    currentExpense.splice(idx,1); renderExpenses();
+  }
+  if(e.target.classList.contains("row-edit")){
+    const exp = currentExpense[idx];
+    amountInput.value = exp.amount;
+    paidBySelect.value = exp.name;
+    currentExpense.splice(idx,1); renderExpenses();
+  }
+});
 
-    renderSummary();
-}
+// Finish Expense → save to history
+finishBtn.addEventListener("click", ()=>{
+  if(currentExpense.length===0) return;
 
-/* ---------- Summary ---------- */
-function renderSummary() {
-    summaryList.innerHTML = "";
+  const balances = {};
+  let total = 0;
+  people.forEach(p => balances[p] = 0);
+  currentExpense.forEach(e => { balances[e.name] += e.amount; total += e.amount; });
+  const split = total / people.length;
+  people.forEach(p => balances[p] -= split);
 
-    if (expenses.length === 0) return; // Only show after at least 1 expense
+  history.push({id:Date.now(), timestamp:Date.now(), balances});
+  currentExpense = []; people = [];
+  summaryModal.style.display="none";
+  renderPeople(); renderExpenses(); renderHistory(); saveData();
+});
 
-    people.forEach(p => {
-        const li = document.createElement("li");
-        li.className = "list-item";
+// Edit → back to main page
+editBtn.addEventListener("click", ()=>{
+  summaryModal.style.display="none";
+  renderPeople(); renderExpenses();
+});
 
-        if (p.balance > 0) {
-            li.innerHTML = `<span class="green">${p.name} receives ₹${p.balance.toFixed(2)}</span>`;
-        } else if (p.balance < 0) {
-            li.innerHTML = `<span class="red">${p.name} owes ₹${Math.abs(p.balance).toFixed(2)}</span>`;
-        } else {
-            li.innerHTML = `<span class="muted">${p.name} is settled</span>`;
-        }
+// Clear All
+clearAllBtn.addEventListener("click", ()=>{
+  people = []; currentExpense = []; history = [];
+  summaryModal.style.display="none";
+  renderPeople(); renderExpenses(); renderHistory(); saveData();
+});
 
-        summaryList.appendChild(li);
-    });
-}
-
-/* ---------- Init ---------- */
-function renderAll() {
-    renderPeople();
-    renderExpenses();
-    renderSummary();
-}
-
-loadFromStorage();
-updatePaidBy();
-renderAll();
-recalculate();
+// Initial Render
+renderPeople(); renderExpenses(); renderHistory();
