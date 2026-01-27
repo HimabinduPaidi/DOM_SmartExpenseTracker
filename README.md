@@ -10,15 +10,15 @@ This project focuses on building a real-world user flow using only core web tech
 
 **Tech Stack**
 
-*HTML*
+*HTML*:
 
 HTML is used to define the structure of the application, including input forms, expense lists, summary sections, modal layouts, and history cards.
 
-*CSS*
+*CSS*:
 
 CSS is responsible for layout, styling, and responsiveness. Flexbox is used to align elements properly, while card-based UI and spacing are applied to improve readability. Visual indicators such as color-coded balances help users quickly understand who owes or receives money.
 
-*JavaScript*
+*JavaScript*:
 
 JavaScript powers the complete functionality of the application. It handles user interactions, manages application state, performs calculations, updates the UI dynamically, and controls modal behavior.
 
