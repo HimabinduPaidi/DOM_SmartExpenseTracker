@@ -1,4 +1,5 @@
-**Smart Expense Tracker**:
+**Smart Expense Tracker**
+
 Project Description:
 
 Smart Expense Tracker is a front-end web application designed to help users manage and split group expenses in a simple and organized manner.
